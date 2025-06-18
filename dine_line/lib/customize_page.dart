@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'models.dart';
-
+import "home_page.dart";
 class CustomizePage extends StatefulWidget {
   final FoodItem foodItem;
   final Function(OrderItem) onAddToOrder;
@@ -104,7 +104,8 @@ class _CustomizePageState extends State<CustomizePage> {
             child: SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
+                  await AudioHelper.orderMadness();
                   final orderItem = OrderItem(
                     foodItem: widget.foodItem,
                     selectedAddOns: List.from(_selectedAddOns),

@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'models.dart';
 import 'order_tracking_page.dart';
-
+import 'home_page.dart';
 class OrderSummaryPage extends StatelessWidget {
   final List<OrderItem> cart;
   final String restaurantName;
@@ -103,7 +103,8 @@ class OrderSummaryPage extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      await AudioHelper.playAudio();
                       final finalOrder = Order(
                         id: Random().nextInt(99999).toString(),
                         restaurantName: restaurantName,

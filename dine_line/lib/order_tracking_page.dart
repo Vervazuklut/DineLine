@@ -3,7 +3,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'models.dart';
-
+import "home_page.dart";
 class OrderTrackingPage extends StatefulWidget {
   final Order order;
   final VoidCallback onOrderCancelled;
@@ -29,7 +29,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
   }
 
   void _startOrderSimulation() {
-    Timer(const Duration(seconds: 10), () {
+    Timer(const Duration(seconds: 1800), () {
       if (mounted && !_orderCancelled) {
         setState(() {
           widget.order.status = OrderStatus.preparing;
@@ -37,7 +37,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
       }
     });
 
-    Timer(const Duration(seconds: 25), () {
+    Timer(const Duration(seconds: 1900), () {
       if (mounted && !_orderCancelled) {
         final duration = DateTime.now().difference(widget.order.orderTime);
         setState(() {
@@ -61,7 +61,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
               child: const Text('No'),
             ),
             TextButton(
-              onPressed: () {
+              onPressed: () async {
+                await AudioHelper.cancelOrder();
                 setState(() {
                   _orderCancelled = true;
                 });
@@ -77,7 +78,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     );
   }
 
-  void _showOrderDetails() {
+  void  _showOrderDetails() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -234,7 +235,10 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                 const SizedBox(width: 16),
                 Expanded(
                   child: ElevatedButton(
-                    onPressed: _showOrderDetails,
+                    onPressed: () async {
+                      await AudioHelper.orderMadness();
+                      _showOrderDetails();
+                      },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange,
                       padding: const EdgeInsets.symmetric(vertical: 12),

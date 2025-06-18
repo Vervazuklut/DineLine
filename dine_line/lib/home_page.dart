@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'models.dart';
 import 'store_details_page.dart';
 import 'order_tracking_page.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 // A simple data model for a restaurant
 class Restaurant {
@@ -31,6 +32,25 @@ class HomePage extends StatefulWidget {
 
   @override
   State<HomePage> createState() => _HomePageState();
+}
+
+class AudioHelper {
+  static final AudioPlayer _audioPlayer = AudioPlayer();
+  // Below is for the cart
+  static Future<void> playAudio() async {
+    await _audioPlayer.play(AssetSource('audio/button-pressed.mp3'));
+  }
+
+  static Future<void> playNormal() async {
+    await _audioPlayer.play(AssetSource('audio/normal-click.mp3'));
+  }
+
+  static Future<void> orderMadness() async {
+    await _audioPlayer.play(AssetSource('audio/pressing_order.mp3'));
+  }
+  static Future<void> cancelOrder() async {
+    await _audioPlayer.play(AssetSource('audio/cancel_button_sound.mp3'));
+  }
 }
 
 class _HomePageState extends State<HomePage> {
@@ -247,14 +267,14 @@ class _HomePageState extends State<HomePage> {
   Widget _buildSearchBar() {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFFF5EBE9),
+        color: const Color(0xFFFEB303).withOpacity(0.1),
         borderRadius: BorderRadius.circular(12.0),
       ),
       child: const TextField(
         decoration: InputDecoration(
           hintText: 'Search for food',
-          hintStyle: TextStyle(color: Color(0xFF9B6B6B)),
-          prefixIcon: Icon(Icons.search, color: Color(0xFF9B6B6B)),
+          hintStyle: TextStyle(color: Color(0xFF2F4293)),
+          prefixIcon: Icon(Icons.search, color: Color(0xFF2F4293)),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 10.0),
         ),
@@ -272,7 +292,8 @@ class _HomePageState extends State<HomePage> {
         return _RestaurantCard(
           restaurant: restaurant,
           hasActiveOrder: _currentOrder?.restaurantName == restaurant.name,
-          onTap: () {
+          onTap: () async {
+            await AudioHelper.playNormal();
             Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => StoreDetailsPage(
                 restaurant: restaurant,
@@ -308,7 +329,7 @@ class _HomePageState extends State<HomePage> {
       currentIndex: _selectedIndex,
       onTap: _onItemTapped,
       backgroundColor: const Color(0xFFFFF8F6),
-      selectedItemColor: const Color(0xFF4A4A4A),
+      selectedItemColor: const Color(0xFFB9191E),
       unselectedItemColor: Colors.grey[600],
       elevation: 5,
       showUnselectedLabels: true,
@@ -355,9 +376,9 @@ class _RestaurantCardState extends State<_RestaurantCard> {
             padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(
               color: _isPressed
-                  ? const Color(0xFFE8D5D3)
+                  ? const Color(0xFFB9191E).withOpacity(0.2)
                   : _isHovered
-                  ? const Color(0xFFF0E3E1)
+                  ? const Color(0xFFFEB303).withOpacity(0.1)
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(12.0),
             ),
@@ -391,8 +412,8 @@ class _RestaurantCardState extends State<_RestaurantCard> {
                             style: TextStyle(
                               fontSize: 14,
                               color: widget.restaurant.isOpen
-                                  ? const Color(0xFF5A8E5A)
-                                  : const Color(0xFFC95B5B),
+                                  ? const Color(0xFF2F4293)
+                                  : const Color(0xFFB9191E),
                             ),
                           ),
                         ],
