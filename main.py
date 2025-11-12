@@ -16,6 +16,9 @@ class PlaceOrderRequest(BaseModel):
 class CancelOrderRequest(BaseModel):
     uuid: str
 
+class GetOrderRequest(BaseModel):
+    storeName: str
+
 @app.get("/getOrder")
 def get_order_count():
     """
@@ -37,13 +40,17 @@ def place_order(req: PlaceOrderRequest):
             return JSONResponse(status_code=400, content={"error": "Order already exists for this user."})
     queue_number = len(orders) + 1
 
-    print(req.order)
+    items = req.order.split("^")
 
     orders.append({
         'uuid': req.uuid,
-        'order': req.order,
+        'order': items[1],
         'queue_number': queue_number
     })
+    try:
+        orders_items[items[0]] += 1
+    except KeyError:
+        orders_items[items[0]] = 1
     return {"message": "Order placed", "queue_number": queue_number}
 
 @app.get("/getQueueNumber")
@@ -79,6 +86,14 @@ def cancel_order(req: CancelOrderRequest):
     for j in range(idx, len(orders)):
         orders[j]['queue_number'] -= 1
     return {"message": "Order cancelled"}
+
+@app.post("/getAllOrders")
+def getAllOrders():
+    return orders_items
+
+@app.post("/getStoreOrders")
+def getStoreOrders(req: GetOrderRequest):
+    return orders_items[req.storeName]
 
 # Example curl requests (for documentation):
 # 1. Get order count:
