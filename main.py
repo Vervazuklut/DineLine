@@ -8,7 +8,7 @@ app = FastAPI(title="DineLine Backend")
 # In-memory storage for orders
 # Each order: { 'uuid': str, 'order': List[str], 'queue_number': int }
 orders: List[Dict] = []
-
+orders_items = {}
 class PlaceOrderRequest(BaseModel):
     uuid: str
     order: List[str]
@@ -36,6 +36,9 @@ def place_order(req: PlaceOrderRequest):
         if o['uuid'] == req.uuid:
             return JSONResponse(status_code=400, content={"error": "Order already exists for this user."})
     queue_number = len(orders) + 1
+
+    print(req.order)
+
     orders.append({
         'uuid': req.uuid,
         'order': req.order,
