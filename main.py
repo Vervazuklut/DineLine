@@ -39,8 +39,8 @@ def place_order(req: PlaceOrderRequest):
         if o['uuid'] == req.uuid:
             return JSONResponse(status_code=400, content={"error": "Order already exists for this user."})
     queue_number = len(orders) + 1
-
-    items = req.order.split("^")
+    print(req.order)
+    items = req.order[0].split("^")
 
     orders.append({
         'uuid': req.uuid,
