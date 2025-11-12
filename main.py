@@ -87,7 +87,7 @@ def cancel_order(req: CancelOrderRequest):
         orders[j]['queue_number'] -= 1
     return {"message": "Order cancelled"}
 
-@app.post("/getAllOrders")
+@app.get("/getAllOrders")
 def getAllOrders():
     return orders_items
 
