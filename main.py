@@ -54,6 +54,19 @@ def place_order(req: PlaceOrderRequest):
     print(orders_items)
     return {"message": "Order placed", "queue_number": queue_number}
 
+@app.post("/placeFakeOrder")
+def place_order(req: PlaceOrderRequest):
+    """
+    Handles placing a new, fake order since idk what's wrong with dart...
+    """
+    # Check if user already has an order
+    for o in orders:
+        if o['uuid'] == req.uuid:
+            return JSONResponse(status_code=400, content={"error": "Order already exists for this user."})
+    queue_number = len(orders)
+    items = req.order[0].split("^")
+    return {"message": "Order placed", "queue_number": queue_number}
+
 @app.get("/getQueueNumber")
 def get_queue_number(uuid: str = Query(..., description="User/device UUID")):
     """
