@@ -39,19 +39,18 @@ def place_order(req: PlaceOrderRequest):
         if o['uuid'] == req.uuid:
             return JSONResponse(status_code=400, content={"error": "Order already exists for this user."})
     queue_number = len(orders) + 1
-    items = req.order[0].split("^")
+    for each in req.order:
+        items = each.split("^")
 
-    orders.append({
-        'uuid': req.uuid,
-        'order': items[1],
-        'queue_number': queue_number
-    })
-    try:
+        orders.append({
+            'uuid': req.uuid,
+            'order': items[1],
+            'queue_number': queue_number
+        })
+        if not (items[0] in orders_items):
+            orders_items[items[0]] = 0
         orders_items[items[0]] += 1
-    except KeyError:
-        orders_items[items[0]] = 1
 
-    print(orders_items)
     return {"message": "Order placed", "queue_number": queue_number}
 
 @app.post("/placeFakeOrder")
@@ -59,13 +58,11 @@ def place_order(req: PlaceOrderRequest):
     """
     Handles placing a new, fake order since idk what's wrong with dart...
     """
-    # Check if user already has an order
+
     for o in orders:
         if o['uuid'] == req.uuid:
             return JSONResponse(status_code=400, content={"error": "Order already exists for this user."})
-    queue_number = len(orders)
-    items = req.order[0].split("^")
-    return {"message": "Order placed", "queue_number": queue_number}
+    return {"message": "Order placed", "queue_number": len(orders)}
 
 @app.get("/getQueueNumber")
 def get_queue_number(uuid: str = Query(..., description="User/device UUID")):
@@ -96,6 +93,7 @@ def cancel_order(req: CancelOrderRequest):
         return JSONResponse(status_code=404, content={"error": "Order not found for this user."})
     # Remove the order
     removed_order = orders.pop(idx)
+    print(removed_order)
     # Decrement queue numbers for all orders behind
     for j in range(idx, len(orders)):
         orders[j]['queue_number'] -= 1
